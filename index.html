@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تايني بوكس | القائمة الفاخرة</title>
+    <meta name="description" content="منيو تايني بوكس التفاعلي - كنافة وقهوة مختصة">
+    
+    <!-- استدعاء خطوط عربية وإنجليزية فاخرة -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;800&display=swap" rel="stylesheet">
+    
+    <!-- مكتبة الأيقونات FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            /* --- لوحة الألوان الملكية --- */
+            --bg-deep: #03120E; /* أسود مخضر عميق */
+            --bg-gradient-1: #0A2F23;
+            --bg-gradient-2: #051812;
+            
+            /* تدرجات الذهبي */
+            --gold-light: #F3E5AB;
+            --gold-main: #D4AF37;
+            --gold-dark: #AA8C2C;
+            --gold-gradient: linear-gradient(135deg, var(--gold-light), var(--gold-main), var(--gold-dark));
+            
+            /* النصوص */
+            --text-white: #FFFFFF;
+            --text-offwhite: #E0E0E0;
+            
+            /* تأثيرات الزجاج (Glassmorphism) */
+            --glass-surface: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(212, 175, 55, 0.15);
+            --glass-highlight: rgba(255, 255, 255, 0.05);
+            --blur-amount: 20px;
+        }
+
+        /* --- إعدادات أساسية --- */
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+            margin: 0;
+            background-color: var(--bg-deep);
+            color: var(--text-white);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* شريط التمرير المخصص */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-deep); }
+        ::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 4px; }
+
+        /* --- الخلفية الديناميكية الحية --- */
+        .ambient-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 15% 50%, rgba(26, 93, 68, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 85% 30%, rgba(212, 175, 55, 0.05) 0%, transparent 50%);
+            filter: blur(60px);
+            animation: breathe 10s infinite alternate;
+        }
+        @keyframes breathe { 0% { opacity: 0.6; transform: scale(1); } 100% { opacity: 1; transform: scale(1.1); } }
+
+        /* --- شاشة التحميل (Loader) --- */
+        .loader-overlay {
+            position: fixed; inset: 0;
+            background: var(--bg-deep);
+            z-index: 10000;
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
+            transition: opacity 1s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        
+        .loader-content { position: relative; }
+        
+        .loader-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 4rem; font-weight: 800;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+            opacity: 0; animation: fadeInUp 1s forwards 0.3s;
+        }
+        
+        .loader-line {
+            width: 0; height: 2px; background: var(--gold-main);
+            margin: 10px auto;
+            animation: expandWidth 1s forwards 0.8s;
+        }
+
+        /* --- Hero Section (الواجهة الرئيسية) --- */
+        .hero-section {
+            min-height: 90vh;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center;
+            position: relative;
+            padding: 20px;
+        }
+
+        .hero-logo-box {
+            border: 1px solid var(--gold-main);
+            padding: 30px;
+            position: relative;
+            margin-bottom: 30px;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .hero-logo-box::before {
+            content: ''; position: absolute; inset: 5px; border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .hero-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3.5rem; letter-spacing: 5px; margin: 0;
+            color: var(--text-white);
+            text-transform: uppercase;
+        }
+        
+        .hero-subtitle {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem; color: var(--gold-main); margin-top: 10px; font-style: italic;
+        }
+
+        .hero-arabic {
+            font-size: 1.8rem; margin-top: 20px; font-weight: 300; opacity: 0.9;
+        }
+
+        .scroll-down-btn {
+            position: absolute; bottom: 40px;
+            color: var(--gold-main);
+            font-size: 2rem;
+            animation: bounce 2s infinite;
+            cursor: pointer;
+            background: none; border: none;
+        }
+
+        /* --- القائمة العائمة (Sticky Navbar) --- */
+        .nav-dock-container {
+            position: sticky; top: 20px; z-index: 100;
+            display: flex; justify-content: center;
+            padding: 0 20px;
+            margin-bottom: 50px;
+        }
+
+        .nav-dock {
+            background: rgba(10, 47, 35, 0.7);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            padding: 10px 15px;
+            border-radius: 50px;
+            display: flex; gap: 8px;
+            overflow-x: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            max-width: 100%;
+            scrollbar-width: none;
+        }
+        .nav-dock::-webkit-scrollbar { display: none; }
+
+        .nav-item {
+            background: transparent; border: none;
+            color: var(--text-offwhite);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-family: 'Tajawal', sans-serif; font-weight: bold; font-size: 0.9rem;
+            white-space: nowrap; cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative; overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: ''; position: absolute; inset: 0;
+            background: var(--gold-gradient); opacity: 0; transition: 0.4s;
+            z-index: -1;
+        }
+
+        .nav-item.active, .nav-item:hover { color: #000; transform: translateY(-3px); }
+        .nav-item.active::before, .nav-item:hover::before { opacity: 1; }
+
+        /* --- الحاوية والأقسام --- */
+        .main-container { max-width: 1200px; margin: 0 auto; padding: 0 20px 100px; }
+
+        .section-heading {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 40px; padding-bottom: 15px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            opacity: 0; transform: translateY(30px); transition: 0.8s;
+        }
+        .section-heading.visible { opacity: 1; transform: translateY(0); }
+
+        .heading-title { font-size: 2.2rem; color: var(--gold-main); margin: 0; }
+        .heading-icon { font-size: 2rem; color: var(--text-offwhite); opacity: 0.5; }
+
+        /* --- تصميم الكروت الفاخر (Cards) --- */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .master-card {
+            background: var(--glass-surface);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            opacity: 0; transform: translateY(50px);
+        }
+        .master-card.visible { opacity: 1; transform: translateY(0); }
+
+        .master-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border-color: var(--gold-main);
+            background: var(--glass-highlight);
+        }
+
+        /* دمغة الشعار على الكروت */
+        .card-stamp {
+            position: absolute; top: 15px; left: 15px;
+            width: 40px; height: 40px;
+            border: 1px solid var(--gold-main); border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 800;
+            color: var(--gold-main); background: rgba(0,0,0,0.6);
+            z-index: 10;
+        }
+
+        .card-actions {
+            position: absolute; top: 15px; right: 15px; z-index: 10;
+            display: flex; gap: 8px;
+        }
+        .action-btn {
+            width: 35px; height: 35px; border-radius: 50%;
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(5px);
+            border: none; color: #fff; cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
+            transition: 0.3s;
+        }
+        .action-btn:hover { background: var(--gold-main); color: #000; }
+
+        .card-img-wrapper {
+            height: 220px; width: 100%; overflow: hidden; position: relative;
+        }
+        .card-img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.7s ease;
+        }
+        .master-card:hover .card-img { transform: scale(1.1); }
+
+        .card-overlay-gradient {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 70%;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            pointer-events: none;
+        }
+
+        .card-info { padding: 20px; position: relative; }
+
+        .card-title {
+            font-size: 1.4rem; font-weight: 700; color: #fff; margin: 0 0 15px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .price-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+
+        .price-pill {
+            flex: 1 1 45%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 6px 10px; border-radius: 12px;
+            text-align: center; cursor: default;
+            transition: 0.3s;
+        }
+        .price-pill:hover { border-color: var(--gold-main); background: rgba(212, 175, 55, 0.1); }
+        
+        .pill-label { display: block; font-size: 0.75rem; color: #aaa; margin-bottom: 2px; }
+        .pill-val { font-weight: 700; color: var(--gold-light); font-size: 1rem; }
+
+        /* --- تصميم القوائم (List Style) --- */
+        .luxury-list { display: flex; flex-direction: column; gap: 15px; }
+
+        .list-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.06));
+            padding: 18px 25px; border-radius: 16px;
+            border-right: 4px solid transparent;
+            transition: 0.4s;
+            opacity: 0; transform: translateX(-30px);
+        }
+        .list-row.visible { opacity: 1; transform: translateX(0); }
+
+        .list-row:hover {
+            background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.09));
+            border-right-color: var(--gold-main);
+            padding-right: 35px;
+        }
+
+        .row-title { font-size: 1.1rem; font-weight: 600; color: var(--text-offwhite); }
+        
+        .row-price-badge {
+            background: var(--gold-main); color: #000;
+            padding: 5px 15px; border-radius: 50px;
+            font-weight: 800; font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+            min-width: 80px; text-align: center;
+        }
+        .row-price-badge span { display: block; font-size: 0.65em; opacity: 0.7; line-height: 1; margin-bottom: 2px; text-transform: uppercase; }
+
+        /* --- المساعد الذكي (Smart Assistant) --- */
+        .assistant-fab {
+            position: fixed; bottom: 30px; right: 30px;
+            width: 70px; height: 70px;
+            background: var(--gold-gradient);
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.4rem; color: #000;
+            box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7);
+            cursor: pointer; z-index: 999;
+            transition: 0.3s;
+            animation: pulse-gold 2s infinite;
+        }
+        .assistant-fab:hover { transform: scale(1.1); box-shadow: 0 0 30px var(--gold-main); }
+        
+        @keyframes pulse-gold {
+            0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+        }
+
+        .chat-panel {
+            position: fixed; bottom: 110px; right: 30px;
+            width: 350px; height: 500px;
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--gold-dark);
+            border-radius: 20px;
+            display: flex; flex-direction: column;
+            transform: scale(0); opacity: 0; transform-origin: bottom right;
+            transition: 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            z-index: 998;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            overflow: hidden;
+        }
+        .chat-panel.active { transform: scale(1); opacity: 1; }
+
+        .chat-header {
+            background: var(--bg-gradient-1); padding: 20px; border-bottom: 1px solid var(--glass-border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .chat-header h3 { margin: 0; color: var(--gold-main); font-size: 1.1rem; }
+        
+        .chat-msgs { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .c-msg { padding: 12px 16px; border-radius: 12px; max-width: 80%; font-size: 0.9rem; line-height: 1.5; }
+        .c-bot { background: rgba(255,255,255,0.1); border-bottom-left-radius: 2px; color: #eee; }
+        .c-user { background: var(--gold-main); color: #000; align-self: flex-end; border-bottom-right-radius: 2px; }
+
+        .chat-input-box {
+            padding: 15px; border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex; gap: 10px; background: rgba(0,0,0,0.2);
+        }
+        .chat-input-box input {
+            flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            color: #fff; padding: 10px 15px; border-radius: 20px;
+        }
+        .chat-input-box button {
+            background: var(--gold-main); border: none; width: 40px; height: 40px; border-radius: 50%;
+            color: #000; cursor: pointer; transition: 0.3s;
+        }
+        .chat-input-box button:hover { transform: rotate(-10deg) scale(1.1); }
+
+        /* --- الفوتر --- */
+        footer {
+            text-align: center; padding: 60px 20px;
+            border-top: 1px solid var(--glass-border);
+            margin-top: 80px; position: relative;
+        }
+        .footer-logo { font-family: 'Montserrat', sans-serif; font-size: 2rem; color: var(--gold-dark); margin-bottom: 15px; font-weight: 900; }
+        .social-links i { font-size: 1.5rem; margin: 0 10px; color: var(--text-offwhite); transition: 0.3s; cursor: pointer; }
+        .social-links i:hover { color: var(--gold-main); transform: translateY(-5px); }
+
+        /* Media Queries للجوال */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.2rem; }
+            .hero-section { height: 80vh; }
+            .grid-layout { grid-template-columns: 1fr; }
+            .price-pill { flex: 1 1 30%; }
+            .chat-panel { width: 90%; right: 5%; bottom: 100px; }
+        }
+
+        /* Keyframes */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes expandWidth { from { width: 0; } to { width: 100px; } }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }
+
+    </style>
+</head>
+<body>
+
+    <!-- الخلفية الحية -->
+    <div class="ambient-bg"></div>
+
+    <!-- شاشة التحميل -->
+    <div class="loader-overlay" id="loader">
+        <div class="loader-content">
+            <div class="loader-text">TINY BOX</div>
+            <div class="loader-line"></div>
+        </div>
+    </div>
+
+    <!-- قسم الواجهة (Hero) -->
+    <section class="hero-section">
+        <div class="hero-logo-box">
+            <div class="hero-title">TINY BOX</div>
+            <div class="hero-subtitle">KONAFA & COFFEE</div>
+        </div>
+        <div class="hero-arabic">حيث تلتقي أصالة الكنافة بعبق القهوة المختصة</div>
+        <button class="scroll-down-btn" onclick="scrollToMenu()">
+            <i class="fa-solid fa-chevron-down"></i>
+        </button>
+    </section>
+
+    <!-- شريط التنقل العائم -->
+    <div class="nav-dock-container" id="menuStart">
+        <div class="nav-dock">
+            <button class="nav-item active" onclick="filterSection('kunafa', this)">الكنافة التقليدية</button>
+            <button class="nav-item" onclick="filterSection('chocolate', this)">عشاق الشوكولاتة</button>
+            <button class="nav-item" onclick="filterSection('donuts', this)">دونات & ميني</button>
+            <button class="nav-item" onclick="filterSection('hot-drinks', this)">مشروبات ساخنة</button>
+            <button class="nav-item" onclick="filterSection('cold-drinks', this)">مشروبات باردة</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+
+        <!-- قسم الكنافة التقليدية -->
+        <div id="kunafa" class="menu-section">
+            <div class="section-heading scroll-reveal">
+                <h2 class="heading-title">الكنافة التقليدية</h2>
+                <i class="fa-solid fa-utensils heading-icon"></i>
+            </div>
+            <div class="grid-layout">
+                <!-- كرت 1 -->
+                <div class="master-card scroll-reveal-card">
+                    <div class="card-stamp">TB</div>
+                    <div class="card-actions">
+                        <button class="action-btn"><i class="fa-regular fa-heart"></i></button>
+                        <button class="action-btn"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div class="card-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1576618148400-f54bed99fcf8?auto=format&fit=crop&w=500&q=60" class="card-img" alt="كنافة قشطة">
+                        <div class="card-overlay-gradient"></div>
+                    </div>
+                    <div class="card-info">
+                        <h3 class="card-title">كنافة قشطة ملكية</h3>
+                        <div class="price-grid">
+                            <div class="price-pill"><span class="pill-label">جونيور</span><span class="pill-val">5 ريال</span></div>
+                            <div class="price-pill"><span class="pill-label">هابي</span><span class="pill-val">9 ريال</span></div>
+                            <div class="price-pill"><span class="pill-label">فملي</span><span class="pill-val">40 ريال</span></div>
+                            <div class="price-pill"><span class="pill-label">بارتي</span><span class="pill-val">50 ريال</span></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- كرت 2 -->
+                <div class="master-card scroll-reveal-card" style="transition-delay: 100ms;">
+                    <div class="card-stamp">TB</div>
+                    <div class="card-actions">
+                        <button class="action-btn"><i class="fa-regular fa-heart"></i></button>
+                        <button class="action-btn"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div class="card-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1593345465922-b9e710d02953?auto=format&fit=crop&w=500&q=60" class="card-img" alt="كنافة موز">
+                        <div class="card-overlay-gradient"></div>
+                    </div>
+                    <div class="card-info">
+                        <h3 class="card-title">كنافة بالموز</h3>
+                        <div class="price-grid">
+                            <div class="price-pill"><span class="pill-label">جونيور</span><span class="pill-val">6 ريال</span></div>
+                            <div class="price-pill"><span class="pill-label">هابي</span><span class="pill-val">12 ريال</span></div>
+                            <div class="price-pill"><span class="pill-label">فملي</span><span class="pill-val">45 ريال</span></div>
+                            <div class="price-pill"><span class="pill-label">بارتي</span><span class="pill-val">60 ريال</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- كرت 3 -->
+                <div class="master-card scroll-reveal-card" style="transition-delay: 200ms;">
+                    <div class="card-stamp">TB</div>
+                    <div class="card-actions">
+                        <button class="action-btn"><i class="fa-regular fa-heart"></i></button>
+                        <button class="action-btn"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div class="card-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1629851722872-dd766a0843de?auto=format&fit=crop&w=500&q=60" class="card-img" alt="كنافة مفستقة">
+                        <div class="card-overlay-gradient"></div>
+                    </div>
+                    <div class="card-info">
+                        <h3 class="card-title">كنافة مفستقة (Signature)</h3>
+                        <div class="price-grid">
+                            <div class="price-pill"><span class="pill-label">جونيور</span><span class="pill-val">10 ريال</span></div>
+                            <div class="price-pill"><span class="pill-label">هابي</span><span class="pill-val">16 ريال</span></div>
+                            <div class="price-pill"><span class="pill-label">فملي</span><span class="pill-val">70 ريال</span></div>
+                            <div class="price-pill"><span class="pill-label">بارتي</span><span class="pill-val">80 ريال</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم الشوكولاتة -->
+        <div id="chocolate" class="menu-section">
+            <div style="height: 80px;"></div>
+            <div class="section-heading scroll-reveal">
+                <h2 class="heading-title">عشاق الشوكولاتة</h2>
+                <i class="fa-solid fa-cookie-bite heading-icon"></i>
+            </div>
+            <div class="grid-layout">
+                <!-- كيندر -->
+                <div class="master-card scroll-reveal-card">
+                    <div class="card-stamp">TB</div>
+                    <div class="card-actions">
+                        <button class="action-btn"><i class="fa-regular fa-heart"></i></button>
+                        <button class="action-btn"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div class="card-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1589112705141-8631eb0570b5?auto=format&fit=crop&w=500&q=60" class="card-img" alt="كيندر">
+                        <div class="card-overlay-gradient"></div>
+                    </div>
+                    <div class="card-info">
+                        <h3 class="card-title">كنافة كيندر</h3>
+                        <div class="price-grid">
+                            <div class="price-pill"><span class="pill-label">جونيور</span><span class="pill-val">8 ريال</span></div>
+                            <div class="price-pill"><span class="pill-label">هابي</span><span class="pill-val">15 ريال</span></div>
+                            <div class="price-pill"><span class="pill-label">فملي</span><span class="pill-val">60 ريال</span></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- نوتيلا -->
+                <div class="master-card scroll-reveal-card" style="transition-delay: 100ms;">
+                    <div class="card-stamp">TB</div>
+                    <div class="card-actions">
+                        <button class="action-btn"><i class="fa-regular fa-heart"></i></button>
+                        <button class="action-btn"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div class="card-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1631388514574-d4c3ab4ef53d?auto=format&fit=crop&w=500&q=60" class="card-img" alt="نوتيلا">
+                        <div class="card-overlay-gradient"></div>
+                    </div>
+                    <div class="card-info">
+                        <h3 class="card-title">كنافة نوتيلا</h3>
+                        <div class="price-grid">
+                            <div class="price-pill"><span class="pill-label">جونيور</span><span class="pill-val">8 ريال</span></div>
+                            <div class="price-pill"><span class="pill-label">هابي</span><span class="pill-val">15 ريال</span></div>
+                            <div class="price-pill"><span class="pill-label">فملي</span><span class="pill-val">60 ريال</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم الدونات والمشروبات (قوائم) -->
+        <div id="donuts" class="menu-section">
+            <div style="height: 80px;"></div>
+            <div class="section-heading scroll-reveal">
+                <h2 class="heading-title">دونات & بوكسات</h2>
+                <i class="fa-solid fa-box-open heading-icon"></i>
+            </div>
+            <div class="luxury-list">
+                <div class="list-row scroll-reveal-row">
+                    <div class="row-title">دونات كنافة صغير (قطعة)</div>
+                    <div class="row-price-badge"><span>السعر</span>5</div>
+                </div>
+                <div class="list-row scroll-reveal-row" style="transition-delay: 50ms;">
+                    <div class="row-title">بوكس دونات صغير (6 قطع)</div>
+                    <div class="row-price-badge"><span>السعر</span>29</div>
+                </div>
+                <div class="list-row scroll-reveal-row" style="transition-delay: 100ms;">
+                    <div class="row-title">بوكس نانو (24 قطعة)</div>
+                    <div class="row-price-badge"><span>السعر</span>39</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="hot-drinks" class="menu-section">
+            <div style="height: 80px;"></div>
+            <div class="section-heading scroll-reveal">
+                <h2 class="heading-title">مشروبات ساخنة</h2>
+                <i class="fa-solid fa-mug-hot heading-icon"></i>
+            </div>
+            <div class="luxury-list">
+                <div class="list-row scroll-reveal-row">
+                    <div class="row-title">قهوة سعودية (دلة)</div>
+                    <div class="row-price-badge"><span>السعر</span>50</div>
+                </div>
+                <div class="list-row scroll-reveal-row" style="transition-delay: 50ms;">
+                    <div class="row-title">كابتشينو / لاتيه</div>
+                    <div class="row-price-badge"><span>الكوب</span>10</div>
+                </div>
+                <div class="list-row scroll-reveal-row" style="transition-delay: 100ms;">
+                    <div class="row-title">V60 حار فاخر</div>
+                    <div class="row-price-badge"><span>الكوب</span>15</div>
+                </div>
+            </div>
+        </div>
+        
+         <div id="cold-drinks" class="menu-section">
+            <div style="height: 80px;"></div>
+            <div class="section-heading scroll-reveal">
+                <h2 class="heading-title">مشروبات باردة</h2>
+                <i class="fa-solid fa-glass-water heading-icon"></i>
+            </div>
+            <div class="luxury-list">
+                <div class="list-row scroll-reveal-row">
+                    <div class="row-title">آيس سبانش لاتيه</div>
+                    <div class="row-price-badge"><span>الكوب</span>12</div>
+                </div>
+                <div class="list-row scroll-reveal-row" style="transition-delay: 50ms;">
+                    <div class="row-title">موهيتو (نكهات متعددة)</div>
+                    <div class="row-price-badge"><span>الكوب</span>10</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- الفوتر -->
+    <footer>
+        <div class="footer-logo">TINY BOX</div>
+        <div class="social-links">
+            <i class="fa-brands fa-instagram"></i>
+            <i class="fa-brands fa-twitter"></i>
+            <i class="fa-brands fa-tiktok"></i>
+        </div>
+        <p style="color: #666; margin-top: 20px; font-size: 0.8rem;">© 2025 Tiny Box. All Rights Reserved.</p>
+    </footer>
+
+    <!-- المساعد الذكي -->
+    <div class="assistant-fab" onclick="toggleChat()">TB</div>
+    
+    <div class="chat-panel" id="chatPanel">
+        <div class="chat-header">
+            <h3>مساعد تايني بوكس</h3>
+            <span onclick="toggleChat()" style="cursor: pointer; color: #fff;"><i class="fa-solid fa-xmark"></i></span>
+        </div>
+        <div class="chat-msgs" id="chatMsgs">
+            <div class="c-msg c-bot">أهلاً بك يا فنان! 🎩<br>محتار تطلب إيش اليوم؟</div>
+        </div>
+        <div class="chat-input-box">
+            <input type="text" id="chatInput" placeholder="اكتب سؤالك..." onkeypress="handleEnter(event)">
+            <button onclick="sendMsg()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script>
+        // إزالة شاشة التحميل عند اكتمال تحميل الصفحة
+        window.onload = () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 1000);
+            }, 2500);
+            
+            // تفعيل مراقب التمرير (Scroll Observer) للأنيميشن
+            setupIntersectionObserver();
+        };
+
+        function scrollToMenu() {
+            document.getElementById('menuStart').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function filterSection(id, btn) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'center' });
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        // منطق المساعد الذكي
+        function toggleChat() { document.getElementById('chatPanel').classList.toggle('active'); }
+        function handleEnter(e) { if(e.key === 'Enter') sendMsg(); }
+        
+        function sendMsg() {
+            const input = document.getElementById('chatInput');
+            const msgs = document.getElementById('chatMsgs');
+            const txt = input.value.trim();
+            if(!txt) return;
+
+            // رسالة المستخدم
+            msgs.innerHTML += `<div class="c-msg c-user">${txt}</div>`;
+            input.value = '';
+            msgs.scrollTop = msgs.scrollHeight;
+
+            // رد الروبوت (محاكاة)
+            setTimeout(() => {
+                let reply = "جرب الكنافة المفستقة.. عالم ثاني! 🌍✨";
+                if(txt.includes("سعر") || txt.includes("بكم")) reply = "الأسعار موضحة في المنيو يا غالي، وفيه خيارات تناسب الكل!";
+                if(txt.includes("موقع")) reply = "تفضل بزيارتنا، اضغط على أيقونة الموقع في الفوتر.";
+                if(txt.includes("شكرا") || txt.includes("يعطيك")) reply = "بالعافية مقدماً! 💚";
+                
+                msgs.innerHTML += `<div class="c-msg c-bot">${reply}</div>`;
+                msgs.scrollTop = msgs.scrollHeight;
+            }, 800);
+        }
+
+        // مراقب التمرير للأنيميشن عند ظهور العناصر
+        function setupIntersectionObserver() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.scroll-reveal, .scroll-reveal-card, .scroll-reveal-row').forEach(el => observer.observe(el));
+        }
+    </script>
+</body>
+</html>
