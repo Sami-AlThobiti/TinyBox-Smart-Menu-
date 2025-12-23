@@ -1,0 +1,21 @@
+{
+  "name": "Tiny Box Menu",
+  "short_name": "Tiny Box",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#03120E",
+  "theme_color": "#D4AF37",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/931/931949.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/931/931949.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
